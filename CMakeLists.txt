@@ -36,6 +36,8 @@ else()
 endif()
 
 # 添加子目录
+add_subdirectory(3rd/fmt)
+
 add_subdirectory(main)
 add_subdirectory(utils)
-add_subdirectory(test)
+# add_subdirectory(test)

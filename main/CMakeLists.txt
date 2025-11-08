@@ -5,7 +5,7 @@ set(tgt_name main)
 file(GLOB_RECURSE HEADERS include/utils/*.h include/utils/*.hpp)
 file(GLOB_RECURSE SOURCES src/*.c src/*.cpp src/*.cc src/*.cxx)
 
-add_library(${tgt_name} ${HEADERS} ${SOURCES})
+add_executable(${tgt_name} ${HEADERS} ${SOURCES})
 
 # 添加头文件路径
 target_include_directories(${tgt_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
