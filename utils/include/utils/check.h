@@ -1,8 +1,16 @@
-/*
- * 简介: 校验工具集
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Abin
+
+/**
+ * @file check.h
+ * @brief 校验工具集
+ * @author abin
+ * @date 2025-11-22
  */
 
-#pragma once
+#ifndef __GUARD_CHECK_H_INCLUDE_GUARD__
+#define __GUARD_CHECK_H_INCLUDE_GUARD__
+
 #include <cstdint>
 #include <string>
 
@@ -42,3 +50,5 @@ uint32_t fletcher32(const std::string& data);
 uint32_t fletcher32_file(const std::string& filepath);
 
 }  // namespace checkutils
+
+#endif  // __GUARD_CHECK_H_INCLUDE_GUARD__
