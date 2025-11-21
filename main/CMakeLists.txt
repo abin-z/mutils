@@ -2,7 +2,7 @@
 set(tgt_name main)
 
 # 收集头文件和源文件
-file(GLOB_RECURSE SOURCES src/*.c src/*.cpp src/*.cc src/*.cxx)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.c src/*.cpp src/*.cc src/*.cxx)
 
 add_executable(${tgt_name} ${HEADERS} ${SOURCES})
 
