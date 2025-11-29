@@ -1,7 +1,7 @@
-#include <iostream>
+#include "fmt/core.h"
 
 int main()
 {
-  std::cout << "Hello, mutils!" << std::endl;
+  fmt::print("Hello, Utils Library!\n");
   return 0;
 }
