@@ -18,7 +18,7 @@ namespace timeutils
 
 // 获取当前时间字符串，可自定义格式
 // fmt 格式示例: "%Y-%m-%d %H:%M:%S" 或 "%Y-%m-%d %H:%M:%S.%f"
-std::string get_now_time_string(const std::string& fmt_str = "%Y-%m-%d %H:%M:%S");
+std::string get_now_time_string(const std::string &fmt_str = "%Y-%m-%d %H:%M:%S");
 
 // 获取当前时间的时间戳（秒级）
 int64_t current_timestamp_sec();

@@ -8,7 +8,7 @@
 namespace timeutils
 {
 
-std::string get_now_time_string(const std::string& fmt_str)
+std::string get_now_time_string(const std::string &fmt_str)
 {
   using namespace std::chrono;
 

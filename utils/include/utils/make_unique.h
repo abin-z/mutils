@@ -62,7 +62,7 @@ using std::make_unique;
 namespace utils
 {
 template <typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args&&... args)
+std::unique_ptr<T> make_unique(Args &&...args)
 {
   static_assert(!std::is_array<T>::value, "make_unique does not support arrays");
   static_assert(!std::is_reference<T>::value, "T must not be a reference");

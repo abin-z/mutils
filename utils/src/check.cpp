@@ -17,14 +17,14 @@ Buffer make_buffer()
   return {};
 }
 
-std::ifstream open_file(const std::string& filepath)
+std::ifstream open_file(const std::string &filepath)
 {
   return std::ifstream(filepath, std::ios::binary);
 }
 }  // namespace
 
 // ---------------- CRC8 ----------------
-static uint8_t crc8_update(uint8_t crc, const unsigned char* buf, size_t len)
+static uint8_t crc8_update(uint8_t crc, const unsigned char *buf, size_t len)
 {
   while (len--)
   {
@@ -34,12 +34,12 @@ static uint8_t crc8_update(uint8_t crc, const unsigned char* buf, size_t len)
   return crc;
 }
 
-uint8_t crc8(const std::string& data)
+uint8_t crc8(const std::string &data)
 {
-  return crc8_update(0x00, reinterpret_cast<const unsigned char*>(data.c_str()), data.size());
+  return crc8_update(0x00, reinterpret_cast<const unsigned char *>(data.c_str()), data.size());
 }
 
-uint8_t crc8_file(const std::string& filepath)
+uint8_t crc8_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -49,13 +49,13 @@ uint8_t crc8_file(const std::string& filepath)
   while (file.good())
   {
     file.read(buffer.data(), buffer.size());
-    crc = crc8_update(crc, reinterpret_cast<const unsigned char*>(buffer.data()), file.gcount());
+    crc = crc8_update(crc, reinterpret_cast<const unsigned char *>(buffer.data()), file.gcount());
   }
   return crc;
 }
 
 // ---------------- CRC16 ----------------
-static uint16_t crc16_update(uint16_t crc, const unsigned char* buf, size_t len)
+static uint16_t crc16_update(uint16_t crc, const unsigned char *buf, size_t len)
 {
   while (len--)
   {
@@ -65,12 +65,12 @@ static uint16_t crc16_update(uint16_t crc, const unsigned char* buf, size_t len)
   return crc;
 }
 
-uint16_t crc16(const std::string& data)
+uint16_t crc16(const std::string &data)
 {
-  return crc16_update(0xFFFF, reinterpret_cast<const unsigned char*>(data.c_str()), data.size());
+  return crc16_update(0xFFFF, reinterpret_cast<const unsigned char *>(data.c_str()), data.size());
 }
 
-uint16_t crc16_file(const std::string& filepath)
+uint16_t crc16_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -80,13 +80,13 @@ uint16_t crc16_file(const std::string& filepath)
   while (file.good())
   {
     file.read(buffer.data(), buffer.size());
-    crc = crc16_update(crc, reinterpret_cast<const unsigned char*>(buffer.data()), file.gcount());
+    crc = crc16_update(crc, reinterpret_cast<const unsigned char *>(buffer.data()), file.gcount());
   }
   return crc;
 }
 
 // ---------------- CRC32 ----------------
-static uint32_t crc32_update(uint32_t crc, const unsigned char* buf, size_t len)
+static uint32_t crc32_update(uint32_t crc, const unsigned char *buf, size_t len)
 {
   crc = ~crc;
   while (len--)
@@ -97,12 +97,12 @@ static uint32_t crc32_update(uint32_t crc, const unsigned char* buf, size_t len)
   return ~crc;
 }
 
-uint32_t crc32(const std::string& data)
+uint32_t crc32(const std::string &data)
 {
-  return crc32_update(0, reinterpret_cast<const unsigned char*>(data.c_str()), data.size());
+  return crc32_update(0, reinterpret_cast<const unsigned char *>(data.c_str()), data.size());
 }
 
-uint32_t crc32_file(const std::string& filepath)
+uint32_t crc32_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -112,20 +112,20 @@ uint32_t crc32_file(const std::string& filepath)
   while (file.good())
   {
     file.read(buffer.data(), buffer.size());
-    crc = crc32_update(crc, reinterpret_cast<const unsigned char*>(buffer.data()), file.gcount());
+    crc = crc32_update(crc, reinterpret_cast<const unsigned char *>(buffer.data()), file.gcount());
   }
   return crc;
 }
 
 // ---------------- 和校验 ----------------
-uint8_t sum8(const std::string& data)
+uint8_t sum8(const std::string &data)
 {
   uint16_t sum = 0;
   for (auto c : data) sum += static_cast<uint8_t>(c);
   return static_cast<uint8_t>(sum & 0xFF);
 }
 
-uint8_t sum8_file(const std::string& filepath)
+uint8_t sum8_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -140,14 +140,14 @@ uint8_t sum8_file(const std::string& filepath)
   return static_cast<uint8_t>(sum & 0xFF);
 }
 
-uint16_t sum16(const std::string& data)
+uint16_t sum16(const std::string &data)
 {
   uint32_t sum = 0;
   for (auto c : data) sum += static_cast<uint8_t>(c);
   return static_cast<uint16_t>(sum & 0xFFFF);
 }
 
-uint16_t sum16_file(const std::string& filepath)
+uint16_t sum16_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -163,14 +163,14 @@ uint16_t sum16_file(const std::string& filepath)
 }
 
 // ---------------- 异或校验 ----------------
-uint8_t xor8(const std::string& data)
+uint8_t xor8(const std::string &data)
 {
   uint8_t val = 0;
   for (auto c : data) val ^= static_cast<uint8_t>(c);
   return val;
 }
 
-uint8_t xor8_file(const std::string& filepath)
+uint8_t xor8_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -186,14 +186,14 @@ uint8_t xor8_file(const std::string& filepath)
 }
 
 // ---------------- LRC ----------------
-uint8_t lrc8(const std::string& data)
+uint8_t lrc8(const std::string &data)
 {
   uint8_t sum = 0;
   for (auto c : data) sum += static_cast<uint8_t>(c);
   return static_cast<uint8_t>(-sum);
 }
 
-uint8_t lrc8_file(const std::string& filepath)
+uint8_t lrc8_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -209,7 +209,7 @@ uint8_t lrc8_file(const std::string& filepath)
 }
 
 // ---------------- Fletcher16 ----------------
-uint16_t fletcher16(const std::string& data)
+uint16_t fletcher16(const std::string &data)
 {
   uint16_t sum1 = 0;
   uint16_t sum2 = 0;
@@ -221,7 +221,7 @@ uint16_t fletcher16(const std::string& data)
   return (sum2 << 8) | sum1;
 }
 
-uint16_t fletcher16_file(const std::string& filepath)
+uint16_t fletcher16_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;
@@ -242,7 +242,7 @@ uint16_t fletcher16_file(const std::string& filepath)
 }
 
 // ---------------- Fletcher32 ----------------
-uint32_t fletcher32(const std::string& data)
+uint32_t fletcher32(const std::string &data)
 {
   uint32_t sum1 = 0;
   uint32_t sum2 = 0;
@@ -254,7 +254,7 @@ uint32_t fletcher32(const std::string& data)
   return (sum2 << 16) | sum1;
 }
 
-uint32_t fletcher32_file(const std::string& filepath)
+uint32_t fletcher32_file(const std::string &filepath)
 {
   auto file = open_file(filepath);
   if (!file) return 0;

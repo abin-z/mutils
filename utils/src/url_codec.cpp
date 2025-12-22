@@ -6,7 +6,7 @@
 namespace codec
 {
 
-std::string url_encode(const std::string& value)
+std::string url_encode(const std::string &value)
 {
   static const char hex[] = "0123456789ABCDEF";
   std::string result;
@@ -29,7 +29,7 @@ std::string url_encode(const std::string& value)
   return result;
 }
 
-std::string url_decode(const std::string& value)
+std::string url_decode(const std::string &value)
 {
   std::string result;
   result.reserve(value.size());
