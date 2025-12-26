@@ -4,7 +4,7 @@ set(tgt_name unittest)
 # 收集头文件和源文件
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.c src/*.cpp src/*.cc src/*.cxx)
 
-add_library(${tgt_name} ${HEADERS} ${SOURCES})
+add_executable(${tgt_name} ${HEADERS} ${SOURCES})
 
 # 添加头文件路径
 target_include_directories(${tgt_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
@@ -16,3 +16,4 @@ target_include_directories(${tgt_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_
 
 # link fmt library
 target_link_libraries(${tgt_name} PUBLIC fmt::fmt)
+target_link_libraries(${tgt_name} PRIVATE Catch2::Catch2)
