@@ -23,7 +23,7 @@ std::string get_now_time_string(const std::string &fmt_str)
 #endif
 
   std::ostringstream oss;
-  std::string fmt_copy = fmt_str;
+  std::string fmt_copy = fmt_str.empty() ? "%Y-%m-%d %H:%M:%S" : fmt_str;
 
   // 处理 %f 毫秒
   size_t pos = fmt_copy.find("%f");
