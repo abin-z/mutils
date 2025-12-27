@@ -21,7 +21,7 @@ namespace checkutils
 uint8_t crc8(const std::string &data);
 uint8_t crc8_file(const std::string &filepath);
 
-uint16_t crc16(const std::string &data);
+uint16_t crc16(const std::string &data); // CRC-16-modbus
 uint16_t crc16_file(const std::string &filepath);
 
 uint32_t crc32(const std::string &data);
