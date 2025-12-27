@@ -222,3 +222,110 @@ TEST_CASE("timeutils: special characters in format", "[timeutils][format]")
   REQUIRE(s.find('@') != std::string::npos);
   REQUIRE(s.find('.') != std::string::npos);
 }
+
+// ---------------- 额外 get_now_time_string 测试 ----------------
+
+// 空格式：应回退到默认格式
+TEST_CASE("timeutils: empty format string fallback", "[timeutils][format][edge]")
+{
+  auto s = get_now_time_string("");
+  REQUIRE(!s.empty());
+  REQUIRE(s.size() == 19);  // YYYY-MM-DD HH:MM:SS
+}
+
+// 只包含毫秒
+TEST_CASE("timeutils: format with only milliseconds", "[timeutils][format][edge]")
+{
+  auto s = get_now_time_string("%f");
+  REQUIRE(s.size() == 3);
+
+  int ms = std::stoi(s);
+  REQUIRE(ms >= 0);
+  REQUIRE(ms <= 999);
+}
+
+// %f 在不同位置
+TEST_CASE("timeutils: %f position variants", "[timeutils][format]")
+{
+  auto s1 = get_now_time_string("%f-%H:%M:%S");
+  REQUIRE(s1.size() >= 12);
+
+  auto s2 = get_now_time_string("%H:%M:%S.%f");
+  REQUIRE(s2.size() == 12);  // 8 + 1 + 3
+
+  auto s3 = get_now_time_string("%Y-%m-%d-%f");
+  REQUIRE(s3.size() == 14);  // 10 + 1 + 3
+}
+
+// 毫秒始终是 3 位
+TEST_CASE("timeutils: milliseconds always three digits", "[timeutils][format]")
+{
+  for (int i = 0; i < 10; ++i)
+  {
+    auto s = get_now_time_string("%H:%M:%S.%f");
+    auto pos = s.find('.');
+    REQUIRE(pos != std::string::npos);
+
+    std::string ms = s.substr(pos + 1);
+    REQUIRE(ms.size() == 3);
+  }
+}
+
+// 各字段数值范围合理
+TEST_CASE("timeutils: formatted values are reasonable2", "[timeutils][format][range]")
+{
+  auto s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+
+  int year = std::stoi(s.substr(0, 4));
+  int month = std::stoi(s.substr(5, 2));
+  int day = std::stoi(s.substr(8, 2));
+  int hour = std::stoi(s.substr(11, 2));
+  int minute = std::stoi(s.substr(14, 2));
+  int second = std::stoi(s.substr(17, 2));
+  int millis = std::stoi(s.substr(20, 3));
+
+  REQUIRE(year >= 1970);
+
+  REQUIRE(month >= 1);
+  REQUIRE(month <= 12);
+
+  REQUIRE(day >= 1);
+  REQUIRE(day <= 31);
+
+  REQUIRE(hour >= 0);
+  REQUIRE(hour <= 23);
+
+  REQUIRE(minute >= 0);
+  REQUIRE(minute <= 59);
+
+  REQUIRE(second >= 0);
+  REQUIRE(second <= 60);  // 闰秒兼容
+
+  REQUIRE(millis >= 0);
+  REQUIRE(millis <= 999);
+}
+
+// 快速连续调用稳定性
+TEST_CASE("timeutils: rapid formatted calls stability", "[timeutils][format][stress]")
+{
+  for (int i = 0; i < 100; ++i)
+  {
+    auto s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+    REQUIRE(!s.empty());
+    REQUIRE(s.size() == 23);  // 固定长度
+  }
+}
+
+// 无 %f 时不应出现小数点
+TEST_CASE("timeutils: no milliseconds no dot", "[timeutils][format]")
+{
+  auto s = get_now_time_string("%Y-%m-%d %H:%M:%S");
+  REQUIRE(s.find('.') == std::string::npos);
+}
+
+// 非法 / 未知 token 不崩溃
+TEST_CASE("timeutils: unknown format tokens are safe", "[timeutils][format][robust]")
+{
+  auto s = get_now_time_string("%Q-%E-%Y");
+  REQUIRE(!s.empty());
+}
