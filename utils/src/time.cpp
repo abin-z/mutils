@@ -7,7 +7,7 @@
 namespace timeutils
 {
 
-std::string format_time_point(const std::chrono::system_clock::time_point &tp, const std::string &fmt_str)
+std::string format_time_string(const std::chrono::system_clock::time_point &tp, const std::string &fmt_str)
 {
   using namespace std::chrono;
 
@@ -63,7 +63,7 @@ std::string format_time_point(const std::chrono::system_clock::time_point &tp, c
 
 std::string now_time_string(const std::string &fmt_str)
 {
-  return format_time_point(std::chrono::system_clock::now(), fmt_str);
+  return format_time_string(std::chrono::system_clock::now(), fmt_str);
 }
 
 int64_t current_timestamp_sec()
