@@ -141,3 +141,84 @@ TEST_CASE("timeutils: timestamp and string consistency", "[timeutils][consistenc
   // 当前时间字符串对应的时间戳应该在 ts1 ~ ts2 区间内
   REQUIRE(ts1 <= ts2);
 }
+
+// ---------------- 多个 %f 出现 ----------------
+TEST_CASE("timeutils: multiple %f placeholders", "[timeutils][format][millis]")
+{
+  std::string fmt = "%Y-%m-%d %H:%M:%S.%f.%f";
+  std::string s = get_now_time_string(fmt);
+  REQUIRE(!s.empty());
+
+  // 检查两个小数秒拼接
+  size_t first_dot = s.find('.');
+  size_t second_dot = s.find('.', first_dot + 1);
+  REQUIRE(first_dot != std::string::npos);
+  REQUIRE(second_dot != std::string::npos);
+
+  // 每个毫秒部分长度为3
+  REQUIRE(second_dot - first_dot == 4);
+}
+
+// ---------------- 空格式字符串 ----------------
+TEST_CASE("timeutils: empty format string", "[timeutils][format]")
+{
+  std::string s = get_now_time_string("");
+  REQUIRE(!s.empty());  // 仍然返回非空
+}
+
+// ---------------- 极端格式测试 ----------------
+TEST_CASE("timeutils: extreme format strings", "[timeutils][format]")
+{
+  // 只输出年份
+  std::string s1 = get_now_time_string("%Y");
+  REQUIRE(s1.size() == 4);
+
+  // 只输出月份和日期
+  std::string s2 = get_now_time_string("%m-%d");
+  REQUIRE(s2.size() == 5);
+
+  // 只输出小时分钟秒
+  std::string s3 = get_now_time_string("%H:%M:%S");
+  REQUIRE(s3.size() == 8);
+}
+
+// ---------------- 高频连续调用稳定性 ----------------
+TEST_CASE("timeutils: high frequency calls", "[timeutils][performance]")
+{
+  for (int i = 0; i < 1000; ++i)
+  {
+    std::string s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+    REQUIRE(!s.empty());
+    REQUIRE(s.find('.') != std::string::npos);
+  }
+}
+
+// ---------------- 格式化内容合理性 ----------------
+TEST_CASE("timeutils: formatted values are reasonable", "[timeutils][format][range]")
+{
+  std::string s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+
+  // 提取各部分
+  int year, month, day, hour, min, sec, millis;
+  int matched = sscanf(s.c_str(), "%d-%d-%d %d:%d:%d.%d", &year, &month, &day, &hour, &min, &sec, &millis);
+  REQUIRE(matched == 7);
+
+  REQUIRE((year >= 1970));
+  REQUIRE((month >= 1 && month <= 12));
+  REQUIRE((day >= 1 && day <= 31));
+  REQUIRE((hour >= 0 && hour <= 23));
+  REQUIRE((min >= 0 && min <= 59));
+  REQUIRE((sec >= 0 && sec <= 59));
+  REQUIRE((millis >= 0 && millis <= 999));
+}
+
+// ---------------- 特殊字符格式测试 ----------------
+TEST_CASE("timeutils: special characters in format", "[timeutils][format]")
+{
+  std::string fmt = "Today is %Y/%m/%d @ %H-%M-%S.%f";
+  std::string s = get_now_time_string(fmt);
+  REQUIRE(!s.empty());
+  REQUIRE(s.find("Today is") == 0);
+  REQUIRE(s.find('@') != std::string::npos);
+  REQUIRE(s.find('.') != std::string::npos);
+}
