@@ -61,7 +61,7 @@ std::string format_time_point(const std::chrono::system_clock::time_point &tp, c
   return std::string(buf);
 }
 
-std::string get_now_time_string(const std::string &fmt_str)
+std::string now_time_string(const std::string &fmt_str)
 {
   return format_time_point(std::chrono::system_clock::now(), fmt_str);
 }

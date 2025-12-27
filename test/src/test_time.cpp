@@ -11,10 +11,10 @@ using namespace timeutils;
 // ---------------- get_now_time_string 测试 ----------------
 TEST_CASE("timeutils: get_now_time_string returns non-empty string", "[timeutils][string]")
 {
-  std::string t1 = get_now_time_string();
+  std::string t1 = now_time_string();
   REQUIRE(!t1.empty());
 
-  std::string t2 = get_now_time_string("%Y-%m-%d");
+  std::string t2 = now_time_string("%Y-%m-%d");
   REQUIRE(!t2.empty());
   REQUIRE(t2.size() >= 10);  // 年-月-日长度至少 10
 }
@@ -54,12 +54,12 @@ TEST_CASE("timeutils: timestamps increase over sleep", "[timeutils][order]")
 TEST_CASE("timeutils: custom format string", "[timeutils][format]")
 {
   std::string fmt1 = "%Y-%m-%d %H:%M:%S.%f";
-  std::string s1 = get_now_time_string(fmt1);
+  std::string s1 = now_time_string(fmt1);
   REQUIRE(!s1.empty());
   REQUIRE(s1.find('.') != std::string::npos);  // 包含小数秒
 
   std::string fmt2 = "%H:%M:%S";
-  std::string s2 = get_now_time_string(fmt2);
+  std::string s2 = now_time_string(fmt2);
   REQUIRE(!s2.empty());
   REQUIRE(s2.size() >= 8);
 }
@@ -67,7 +67,7 @@ TEST_CASE("timeutils: custom format string", "[timeutils][format]")
 // ---------------- 非空与基本格式检查 ----------------
 TEST_CASE("timeutils: basic string output", "[timeutils][string]")
 {
-  std::string s = get_now_time_string();
+  std::string s = now_time_string();
   REQUIRE(!s.empty());
   REQUIRE(s.size() >= 19);  // "YYYY-MM-DD HH:MM:SS" 长度至少 19
 }
@@ -75,15 +75,15 @@ TEST_CASE("timeutils: basic string output", "[timeutils][string]")
 // ---------------- 自定义格式 ----------------
 TEST_CASE("timeutils: custom format output", "[timeutils][format]")
 {
-  auto s1 = get_now_time_string("%Y-%m-%d");
+  auto s1 = now_time_string("%Y-%m-%d");
   REQUIRE(!s1.empty());
   REQUIRE(s1.size() == 10);
 
-  auto s2 = get_now_time_string("%H:%M:%S");
+  auto s2 = now_time_string("%H:%M:%S");
   REQUIRE(!s2.empty());
   REQUIRE(s2.size() == 8);
 
-  auto s3 = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+  auto s3 = now_time_string("%Y-%m-%d %H:%M:%S.%f");
   REQUIRE(!s3.empty());
   REQUIRE(s3.find('.') != std::string::npos);
 }
@@ -131,7 +131,7 @@ TEST_CASE("timeutils: rapid consecutive calls", "[timeutils][fast]")
 TEST_CASE("timeutils: timestamp and string consistency", "[timeutils][consistency]")
 {
   int64_t ts1 = current_timestamp_sec();
-  std::string tstr = get_now_time_string("%Y-%m-%d %H:%M:%S");
+  std::string tstr = now_time_string("%Y-%m-%d %H:%M:%S");
 
   // 简单正则匹配 YYYY-MM-DD HH:MM:SS
   std::regex re("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
@@ -146,7 +146,7 @@ TEST_CASE("timeutils: timestamp and string consistency", "[timeutils][consistenc
 TEST_CASE("timeutils: multiple %f placeholders", "[timeutils][format][millis]")
 {
   std::string fmt = "%Y-%m-%d %H:%M:%S.%f.%f";
-  std::string s = get_now_time_string(fmt);
+  std::string s = now_time_string(fmt);
   REQUIRE(!s.empty());
 
   // 检查两个小数秒拼接
@@ -162,7 +162,7 @@ TEST_CASE("timeutils: multiple %f placeholders", "[timeutils][format][millis]")
 // ---------------- 空格式字符串 ----------------
 TEST_CASE("timeutils: empty format string", "[timeutils][format]")
 {
-  std::string s = get_now_time_string("");
+  std::string s = now_time_string("");
   REQUIRE(!s.empty());  // 仍然返回非空
 }
 
@@ -170,15 +170,15 @@ TEST_CASE("timeutils: empty format string", "[timeutils][format]")
 TEST_CASE("timeutils: extreme format strings", "[timeutils][format]")
 {
   // 只输出年份
-  std::string s1 = get_now_time_string("%Y");
+  std::string s1 = now_time_string("%Y");
   REQUIRE(s1.size() == 4);
 
   // 只输出月份和日期
-  std::string s2 = get_now_time_string("%m-%d");
+  std::string s2 = now_time_string("%m-%d");
   REQUIRE(s2.size() == 5);
 
   // 只输出小时分钟秒
-  std::string s3 = get_now_time_string("%H:%M:%S");
+  std::string s3 = now_time_string("%H:%M:%S");
   REQUIRE(s3.size() == 8);
 }
 
@@ -187,7 +187,7 @@ TEST_CASE("timeutils: high frequency calls", "[timeutils][performance]")
 {
   for (int i = 0; i < 1000; ++i)
   {
-    std::string s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+    std::string s = now_time_string("%Y-%m-%d %H:%M:%S.%f");
     REQUIRE(!s.empty());
     REQUIRE(s.find('.') != std::string::npos);
   }
@@ -196,7 +196,7 @@ TEST_CASE("timeutils: high frequency calls", "[timeutils][performance]")
 // ---------------- 格式化内容合理性 ----------------
 TEST_CASE("timeutils: formatted values are reasonable", "[timeutils][format][range]")
 {
-  std::string s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+  std::string s = now_time_string("%Y-%m-%d %H:%M:%S.%f");
 
   // 提取各部分
   int year, month, day, hour, min, sec, millis;
@@ -216,7 +216,7 @@ TEST_CASE("timeutils: formatted values are reasonable", "[timeutils][format][ran
 TEST_CASE("timeutils: special characters in format", "[timeutils][format]")
 {
   std::string fmt = "Today is %Y/%m/%d @ %H-%M-%S.%f";
-  std::string s = get_now_time_string(fmt);
+  std::string s = now_time_string(fmt);
   REQUIRE(!s.empty());
   REQUIRE(s.find("Today is") == 0);
   REQUIRE(s.find('@') != std::string::npos);
@@ -228,7 +228,7 @@ TEST_CASE("timeutils: special characters in format", "[timeutils][format]")
 // 空格式：应回退到默认格式
 TEST_CASE("timeutils: empty format string fallback", "[timeutils][format][edge]")
 {
-  auto s = get_now_time_string("");
+  auto s = now_time_string("");
   REQUIRE(!s.empty());
   REQUIRE(s.size() == 19);  // YYYY-MM-DD HH:MM:SS
 }
@@ -236,7 +236,7 @@ TEST_CASE("timeutils: empty format string fallback", "[timeutils][format][edge]"
 // 只包含毫秒
 TEST_CASE("timeutils: format with only milliseconds", "[timeutils][format][edge]")
 {
-  auto s = get_now_time_string("%f");
+  auto s = now_time_string("%f");
   REQUIRE(s.size() == 3);
 
   int ms = std::stoi(s);
@@ -247,13 +247,13 @@ TEST_CASE("timeutils: format with only milliseconds", "[timeutils][format][edge]
 // %f 在不同位置
 TEST_CASE("timeutils: %f position variants", "[timeutils][format]")
 {
-  auto s1 = get_now_time_string("%f-%H:%M:%S");
+  auto s1 = now_time_string("%f-%H:%M:%S");
   REQUIRE(s1.size() >= 12);
 
-  auto s2 = get_now_time_string("%H:%M:%S.%f");
+  auto s2 = now_time_string("%H:%M:%S.%f");
   REQUIRE(s2.size() == 12);  // 8 + 1 + 3
 
-  auto s3 = get_now_time_string("%Y-%m-%d-%f");
+  auto s3 = now_time_string("%Y-%m-%d-%f");
   REQUIRE(s3.size() == 14);  // 10 + 1 + 3
 }
 
@@ -262,7 +262,7 @@ TEST_CASE("timeutils: milliseconds always three digits", "[timeutils][format]")
 {
   for (int i = 0; i < 10; ++i)
   {
-    auto s = get_now_time_string("%H:%M:%S.%f");
+    auto s = now_time_string("%H:%M:%S.%f");
     auto pos = s.find('.');
     REQUIRE(pos != std::string::npos);
 
@@ -274,7 +274,7 @@ TEST_CASE("timeutils: milliseconds always three digits", "[timeutils][format]")
 // 各字段数值范围合理
 TEST_CASE("timeutils: formatted values are reasonable2", "[timeutils][format][range]")
 {
-  auto s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+  auto s = now_time_string("%Y-%m-%d %H:%M:%S.%f");
 
   int year = std::stoi(s.substr(0, 4));
   int month = std::stoi(s.substr(5, 2));
@@ -310,7 +310,7 @@ TEST_CASE("timeutils: rapid formatted calls stability", "[timeutils][format][str
 {
   for (int i = 0; i < 100; ++i)
   {
-    auto s = get_now_time_string("%Y-%m-%d %H:%M:%S.%f");
+    auto s = now_time_string("%Y-%m-%d %H:%M:%S.%f");
     REQUIRE(!s.empty());
     REQUIRE(s.size() == 23);  // 固定长度
   }
@@ -319,13 +319,13 @@ TEST_CASE("timeutils: rapid formatted calls stability", "[timeutils][format][str
 // 无 %f 时不应出现小数点
 TEST_CASE("timeutils: no milliseconds no dot", "[timeutils][format]")
 {
-  auto s = get_now_time_string("%Y-%m-%d %H:%M:%S");
+  auto s = now_time_string("%Y-%m-%d %H:%M:%S");
   REQUIRE(s.find('.') == std::string::npos);
 }
 
 // 非法 / 未知 token 不崩溃
 TEST_CASE("timeutils: unknown format tokens are safe", "[timeutils][format][robust]")
 {
-  auto s = get_now_time_string("%Q-%E-%Y");
+  auto s = now_time_string("%Q-%E-%Y");
   REQUIRE(!s.empty());
 }
