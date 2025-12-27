@@ -22,28 +22,47 @@ std::string get_now_time_string(const std::string &fmt_str)
   localtime_r(&t, &tm);
 #endif
 
-  std::ostringstream oss;
-  std::string fmt_copy = fmt_str.empty() ? "%Y-%m-%d %H:%M:%S" : fmt_str;
+  std::string fmt = fmt_str.empty() ? "%Y-%m-%d %H:%M:%S" : fmt_str;
 
-  // 处理 %f 毫秒
-  size_t pos = fmt_copy.find("%f");
+  // 计算毫秒，保证 [0, 999]
+  auto ms_total = duration_cast<milliseconds>(now.time_since_epoch()).count();
+  int millis = static_cast<int>(ms_total % 1000);
+  if (millis < 0) millis += 1000;
+
+  // 查找 %f
+  auto pos = fmt.find("%f");
   if (pos != std::string::npos)
   {
-    auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
+    // 拆成两段
+    std::string left = fmt.substr(0, pos);
+    std::string right = fmt.substr(pos + 2);
 
-    // 将 %f 替换为占位符
-    fmt_copy.replace(pos, 2, "%03d");
+    char buf[128]{};
+    std::string result;
 
-    char buf[128];
-    std::strftime(buf, sizeof(buf), fmt_copy.c_str(), &tm);
-    oss << buf;
-    oss << std::setfill('0') << std::setw(3) << ms.count();
-    return oss.str();
+    if (!left.empty())
+    {
+      std::strftime(buf, sizeof(buf), left.c_str(), &tm);
+      result += buf;
+    }
+
+    // 拼毫秒
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(3) << millis;
+    result += oss.str();
+
+    if (!right.empty())
+    {
+      std::strftime(buf, sizeof(buf), right.c_str(), &tm);
+      result += buf;
+    }
+
+    return result;
   }
 
-  // 普通 strftime 格式
-  char buf[128];
-  std::strftime(buf, sizeof(buf), fmt_copy.c_str(), &tm);
+  // 无 %f 的普通情况
+  char buf[128]{};
+  std::strftime(buf, sizeof(buf), fmt.c_str(), &tm);
   return std::string(buf);
 }
 
