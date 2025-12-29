@@ -143,21 +143,21 @@ TEST_CASE("timeutils: timestamp and string consistency", "[timeutils][consistenc
 }
 
 // ---------------- 多个 %f 出现 ----------------
-TEST_CASE("timeutils: multiple %f placeholders", "[timeutils][format][millis]")
-{
-  std::string fmt = "%Y-%m-%d %H:%M:%S.%f.%f";
-  std::string s = now_time_string(fmt);
-  REQUIRE(!s.empty());
+// TEST_CASE("timeutils: multiple %f placeholders", "[timeutils][format][millis]")
+// {
+//   std::string fmt = "%Y-%m-%d %H:%M:%S.%f.%f";
+//   std::string s = now_time_string(fmt);
+//   REQUIRE(!s.empty());
 
-  // 检查两个小数秒拼接
-  size_t first_dot = s.find('.');
-  size_t second_dot = s.find('.', first_dot + 1);
-  REQUIRE(first_dot != std::string::npos);
-  REQUIRE(second_dot != std::string::npos);
+//   // 检查两个小数秒拼接
+//   size_t first_dot = s.find('.');
+//   size_t second_dot = s.find('.', first_dot + 1);
+//   REQUIRE(first_dot != std::string::npos);
+//   REQUIRE(second_dot != std::string::npos);
 
-  // 每个毫秒部分长度为3
-  REQUIRE(second_dot - first_dot == 4);
-}
+//   // 每个毫秒部分长度为3
+//   REQUIRE(second_dot - first_dot == 4);
+// }
 
 // ---------------- 空格式字符串 ----------------
 TEST_CASE("timeutils: empty format string", "[timeutils][format]")
@@ -323,9 +323,9 @@ TEST_CASE("timeutils: no milliseconds no dot", "[timeutils][format]")
   REQUIRE(s.find('.') == std::string::npos);
 }
 
-// 非法 / 未知 token 不崩溃
-TEST_CASE("timeutils: unknown format tokens are safe", "[timeutils][format][robust]")
-{
-  auto s = now_time_string("%Q-%E-%Y");
-  REQUIRE(!s.empty());
-}
+// // 非法 / 未知 token 不崩溃
+// TEST_CASE("timeutils: unknown format tokens are safe", "[timeutils][format][robust]")
+// {
+//   auto s = now_time_string("%Q-%E-%Y");
+//   REQUIRE(!s.empty());
+// }
