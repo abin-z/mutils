@@ -20,7 +20,20 @@ namespace
 std::string write_temp_file(const std::string &content)
 {
   static int idx = 0;
+#ifdef _WIN32
+  char *tmp_dir_buf = nullptr;
+  size_t len = 0;
+  errno_t err = _dupenv_s(&tmp_dir_buf, &len, "TMP");
+  if (err != 0 || !tmp_dir_buf)
+  {
+    err = _dupenv_s(&tmp_dir_buf, &len, "TEMP");
+    REQUIRE(tmp_dir_buf != nullptr);
+  }
+  const std::string path = std::string(tmp_dir_buf) + "\\checkutils_test_" + std::to_string(idx++);
+  free(tmp_dir_buf);
+#else
   const std::string path = "/tmp/checkutils_test_" + std::to_string(idx++);
+#endif
   std::ofstream ofs(path, std::ios::binary);
   REQUIRE(ofs.good());
   ofs.write(content.data(), content.size());
