@@ -2,8 +2,6 @@
 
 #include <chrono>
 #include <ctime>
-#include <iomanip>
-#include <sstream>
 
 namespace timeutils
 {
@@ -65,15 +63,13 @@ inline std::string sanitize_strftime_format(const std::string &fmt)
 }
 
 }  // namespace detail
-
-// ------------------------------------------------------------
 std::string format_time_string(const std::chrono::system_clock::time_point &tp, const std::string &fmt_str)
 {
   using namespace std::chrono;
 
   std::string raw_fmt = fmt_str.empty() ? "%Y-%m-%d %H:%M:%S" : fmt_str;
 
-  // 安全化（仍然需要，防非法 %X）
+  // 防 MSVC 非法 %X UB
   std::string fmt = detail::sanitize_strftime_format(raw_fmt);
 
   // time_t → tm
@@ -90,41 +86,48 @@ std::string format_time_string(const std::chrono::system_clock::time_point &tp, 
   int millis = static_cast<int>(ms_total % 1000);
   if (millis < 0) millis += 1000;
 
-  std::ostringstream out;
-  out << std::setfill('0');
+  // 输出缓冲
+  std::string out;
+  out.reserve(fmt.size() + 8);
+
+  // 预生成毫秒字符串
+  char ms_buf[3];
+  ms_buf[0] = '0' + (millis / 100) % 10;
+  ms_buf[1] = '0' + (millis / 10) % 10;
+  ms_buf[2] = '0' + (millis % 10);
 
   size_t pos = 0;
   while (true)
   {
     size_t fpos = fmt.find("%f", pos);
 
-    // 没有 %f：剩余部分全部交给 strftime
+    // 没有 %f
     if (fpos == std::string::npos)
     {
       if (pos < fmt.size())
       {
         char buf[128]{};
         std::strftime(buf, sizeof(buf), fmt.substr(pos).c_str(), &tm);
-        out << buf;
+        out += buf;
       }
       break;
     }
 
-    // %f 前的部分
+    // %f 前
     if (fpos > pos)
     {
       char buf[128]{};
       std::strftime(buf, sizeof(buf), fmt.substr(pos, fpos - pos).c_str(), &tm);
-      out << buf;
+      out += buf;
     }
 
-    // 一个 %f → 一个毫秒
-    out << std::setw(3) << millis;
+    // %f → 毫秒
+    out.append(ms_buf, 3);
 
     pos = fpos + 2;
   }
 
-  return out.str();
+  return out;
 }
 
 std::string now_time_string(const std::string &fmt_str)
