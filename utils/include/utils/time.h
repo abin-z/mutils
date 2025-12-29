@@ -27,7 +27,7 @@ namespace timeutils
 /**
  * @brief 获取当前时间的格式化字符串
  *
- * @param fmt_str 时间格式字符串，遵循 strftime 规则，
+ * @param fmt_str 时间格式字符串，遵循 strftime 规则，额外支持 %f 毫秒（000–999，固定 3 位）
  *        支持常用格式说明符：
  *        %Y 年, %m 月, %d 日, %H 时, %M 分, %S 秒
  *        额外支持 %f 毫秒（000–999，固定 3 位）
