@@ -14,7 +14,7 @@ std::string url_encode(const std::string &value)
 
   for (unsigned char c : value)
   {
-    if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+    if ((std::isalnum(c) != 0) || c == '-' || c == '_' || c == '.' || c == '~')
     {
       result.push_back(c);
     }
