@@ -65,7 +65,9 @@ inline std::string sanitize_strftime_format(const std::string &fmt)
 }  // namespace detail
 std::string format_time_string(const std::chrono::system_clock::time_point &tp, const std::string &fmt_str)
 {
-  using namespace std::chrono;
+  using std::chrono::duration_cast;
+  using std::chrono::milliseconds;
+  using std::chrono::system_clock;
 
   std::string raw_fmt = fmt_str.empty() ? "%Y-%m-%d %H:%M:%S" : fmt_str;
 
@@ -137,13 +139,17 @@ std::string now_time_string(const std::string &fmt_str)
 
 int64_t current_timestamp_sec()
 {
-  using namespace std::chrono;
+  using std::chrono::duration_cast;
+  using std::chrono::seconds;
+  using std::chrono::system_clock;
   return duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
 }
 
 int64_t current_timestamp_millis()
 {
-  using namespace std::chrono;
+  using std::chrono::duration_cast;
+  using std::chrono::milliseconds;
+  using std::chrono::system_clock;
   return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
 
