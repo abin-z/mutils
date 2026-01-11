@@ -94,9 +94,9 @@ std::string format_time_string(const std::chrono::system_clock::time_point &tp, 
 
   // 预生成毫秒字符串
   char ms_buf[3];
-  ms_buf[0] = '0' + (millis / 100) % 10;
-  ms_buf[1] = '0' + (millis / 10) % 10;
-  ms_buf[2] = '0' + (millis % 10);
+  ms_buf[0] = static_cast<char>('0' + ((millis / 100) % 10));
+  ms_buf[1] = static_cast<char>('0' + ((millis / 10) % 10));
+  ms_buf[2] = static_cast<char>('0' + (millis % 10));
 
   size_t pos = 0;
   while (true)
