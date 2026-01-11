@@ -16,7 +16,7 @@ std::string url_encode(const std::string &value)
   {
     if ((std::isalnum(c) != 0) || c == '-' || c == '_' || c == '.' || c == '~')
     {
-      result.push_back(c);
+      result.push_back(static_cast<char>(c));
     }
     else
     {
@@ -46,7 +46,7 @@ std::string url_decode(const std::string &value)
         throw std::runtime_error("Invalid percent-encoding");
       };
       unsigned char decoded_char = (hex_digit(value[i + 1]) << 4) | hex_digit(value[i + 2]);
-      result.push_back(decoded_char);
+      result.push_back(static_cast<char>(decoded_char));
       i += 3;
     }
     else if (value[i] == '+')

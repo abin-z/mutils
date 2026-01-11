@@ -29,7 +29,7 @@ static uint8_t crc8_update(uint8_t crc, const unsigned char *buf, size_t len)
   while ((len--) != 0U)
   {
     crc ^= *buf++;
-    for (int i = 0; i < 8; ++i) crc = (crc & 0x80) ? (crc << 1) ^ 0x07 : (crc << 1);
+    for (int i = 0; i < 8; ++i) crc = ((crc & 0x80) != 0) ? (crc << 1) ^ 0x07 : (crc << 1);
   }
   return crc;
 }
@@ -60,7 +60,7 @@ static uint16_t crc16_update(uint16_t crc, const unsigned char *buf, size_t len)
   while ((len--) != 0U)
   {
     crc ^= *buf++;
-    for (int i = 0; i < 8; i++) crc = (crc & 1) ? (crc >> 1) ^ 0xA001 : (crc >> 1);
+    for (int i = 0; i < 8; i++) crc = ((crc & 1) != 0) ? (crc >> 1) ^ 0xA001 : (crc >> 1);
   }
   return crc;
 }
@@ -92,7 +92,7 @@ static uint32_t crc32_update(uint32_t crc, const unsigned char *buf, size_t len)
   while ((len--) != 0U)
   {
     crc ^= *buf++;
-    for (int i = 0; i < 8; i++) crc = (crc & 1) ? (crc >> 1) ^ 0xEDB88320 : (crc >> 1);
+    for (int i = 0; i < 8; i++) crc = ((crc & 1) != 0) ? (crc >> 1) ^ 0xEDB88320 : (crc >> 1);
   }
   return ~crc;
 }
