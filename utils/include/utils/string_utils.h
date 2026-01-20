@@ -12,10 +12,22 @@
 #define __GUARD_STRING_UTILS_H_INCLUDE_GUARD__
 
 #include <string>
+#include <vector>
 
 namespace stringutils
 {
-  // TODO: 添加 string 工具函数声明
+std::vector<std::string> split(const std::string &str, char delimiter);
+std::string join(const std::vector<std::string> &parts, const std::string &delimiter);
+std::string to_lower(const std::string &str);
+std::string to_upper(const std::string &str);
+std::string trim(const std::string &str);
+std::string trim_left(const std::string &str);
+std::string trim_right(const std::string &str);
+
+bool starts_with(const std::string &str, const std::string &prefix);
+bool ends_with(const std::string &str, const std::string &suffix);
+bool contains(const std::string &str, const std::string &substr);
+
 }  // namespace stringutils
 
-#endif // __GUARD_STRING_UTILS_H_INCLUDE_GUARD__
+#endif  // __GUARD_STRING_UTILS_H_INCLUDE_GUARD__
