@@ -24,7 +24,7 @@ std::string write_temp_file(const std::string &content)
   char *tmp_dir_buf = nullptr;
   size_t len = 0;
   errno_t err = _dupenv_s(&tmp_dir_buf, &len, "TMP");
-  if (err != 0 || !tmp_dir_buf)
+  if (err != 0 || (tmp_dir_buf == nullptr))
   {
     err = _dupenv_s(&tmp_dir_buf, &len, "TEMP");
     REQUIRE(tmp_dir_buf != nullptr);
@@ -125,7 +125,7 @@ TEST_CASE("checkutils: binary data", "[check][binary]")
   REQUIRE(sum16(data) == static_cast<uint16_t>(0 + 255 + 1));
   REQUIRE(xor8(data) == static_cast<uint8_t>(0 ^ 255 ^ 1));
 
-  const uint8_t expected_lrc = static_cast<uint8_t>(-(0 + 255 + 1));
+  const auto expected_lrc = static_cast<uint8_t>(-(0 + 255 + 1));
   REQUIRE(lrc8(data) == expected_lrc);
 
   REQUIRE(fletcher16(data) == fletcher16(data));

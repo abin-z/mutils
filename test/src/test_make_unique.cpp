@@ -1,6 +1,7 @@
 #include <catch2/catch.hpp>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "utils/make_unique.h"
 
@@ -18,7 +19,7 @@ struct MyStruct
 {
   int a;
   std::string s;
-  MyStruct(int x, std::string str) : a(x), s(str) {}
+  MyStruct(int x, std::string str) : a(x), s(std::move(str)) {}
 };
 
 TEST_CASE("make_unique: object with constructor args", "[make_unique]")

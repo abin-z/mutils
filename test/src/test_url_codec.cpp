@@ -44,7 +44,7 @@ TEST_CASE("url_codec: unicode/utf-8 characters", "[url_codec]")
 
 TEST_CASE("url_codec: empty string", "[url_codec]")
 {
-  std::string raw = "";
+  std::string raw;
   std::string encoded = url_encode(raw);
   REQUIRE(encoded.empty());
   std::string decoded = url_decode(encoded);

@@ -134,7 +134,7 @@ TEST_CASE("timeutils: timestamp and string consistency", "[timeutils][consistenc
   std::string tstr = now_time_string("%Y-%m-%d %H:%M:%S");
 
   // 简单正则匹配 YYYY-MM-DD HH:MM:SS
-  std::regex re("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+  std::regex re(R"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})");
   REQUIRE(std::regex_match(tstr, re));
 
   int64_t ts2 = current_timestamp_sec();
