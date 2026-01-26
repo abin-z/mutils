@@ -20,6 +20,8 @@ std::vector<std::string> split(const std::string &str, char delimiter, bool skip
 std::vector<std::string> split(const std::string &str, const std::string &delimiter, bool skip_empty = false);
 std::string join(const std::vector<std::string> &parts, char delimiter);
 std::string join(const std::vector<std::string> &parts, const std::string &delimiter);
+char to_lower(char c);
+char to_upper(char c);
 std::string to_lower(const std::string &str);
 std::string to_upper(const std::string &str);
 std::string trim(const std::string &str);
