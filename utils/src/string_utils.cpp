@@ -68,6 +68,30 @@ std::string to_upper(const std::string &str)
   return result;
 }
 
+// ASCII 空白字符集合
+constexpr const char *WHITESPACE = " \t\n\r\v\f";
+std::string trim_left(const std::string &str)
+{
+  auto start = str.find_first_not_of(WHITESPACE);
+  if (start == std::string::npos) return "";  // 全部都是空白
+  return str.substr(start);
+}
+
+std::string trim_right(const std::string &str)
+{
+  auto end = str.find_last_not_of(WHITESPACE);
+  if (end == std::string::npos) return "";  // 全部都是空白
+  return str.substr(0, end + 1);
+}
+
+std::string trim(const std::string &str)
+{
+  auto start = str.find_first_not_of(WHITESPACE);
+  if (start == std::string::npos) return "";  // 全部空白
+  auto end = str.find_last_not_of(WHITESPACE);
+  return str.substr(start, end - start + 1);
+}
+
 bool starts_with(const std::string &str, char c)
 {
   return !str.empty() && str.front() == c;
