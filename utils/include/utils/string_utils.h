@@ -26,8 +26,11 @@ std::string trim(const std::string &str);
 std::string trim_left(const std::string &str);
 std::string trim_right(const std::string &str);
 
+bool starts_with(const std::string &str, char c);
 bool starts_with(const std::string &str, const std::string &prefix);
+bool ends_with(const std::string &str, char c);
 bool ends_with(const std::string &str, const std::string &suffix);
+bool contains(const std::string &str, char c);
 bool contains(const std::string &str, const std::string &substr);
 
 }  // namespace stringutils

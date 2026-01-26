@@ -72,4 +72,32 @@ std::string to_upper(const std::string &str)
   return result;
 }
 
+bool starts_with(const std::string &str, char c)
+{
+  return !str.empty() && str.front() == c;
+}
+bool starts_with(const std::string &str, const std::string &prefix)
+{
+  return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
+
+bool ends_with(const std::string &str, char c)
+{
+  return !str.empty() && str.back() == c;
+}
+bool ends_with(const std::string &str, const std::string &suffix)
+{
+  return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+bool contains(const std::string &str, char c)
+{
+  return str.find(c) != std::string::npos;
+}
+bool contains(const std::string &str, const std::string &substr)
+{
+  if (substr.empty()) return true;
+  return str.find(substr) != std::string::npos;
+}
+
 }  // namespace stringutils
