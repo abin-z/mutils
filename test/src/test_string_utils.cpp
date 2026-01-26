@@ -4,7 +4,10 @@
 
 #include "utils/string_utils.h"
 
+using stringutils::contains;
+using stringutils::ends_with;
 using stringutils::split;
+using stringutils::starts_with;
 
 TEST_CASE("split - basic single character delimiter", "[string][split]")
 {
@@ -402,4 +405,116 @@ TEST_CASE("to_lower / to_upper - japanese utf8 integrity", "[string][case][utf8]
   // 日文子串必须完整保留
   CHECK(lower.find("日本語テスト") != std::string::npos);
   CHECK(upper.find("日本語テスト") != std::string::npos);
+}
+
+TEST_CASE("starts_with char", "[string][starts_with][char]")
+{
+  CHECK(starts_with("abc", 'a'));
+  CHECK(!starts_with("abc", 'b'));
+  CHECK(!starts_with("", 'a'));  // empty string
+}
+
+TEST_CASE("starts_with string", "[string][starts_with][string]")
+{
+  CHECK(starts_with("abc", "a"));
+  CHECK(starts_with("abc", "ab"));
+  CHECK(starts_with("abc", "abc"));
+  CHECK(!starts_with("abc", "abcd"));
+  CHECK(!starts_with("abc", "b"));
+  CHECK(!starts_with("", "a"));    // empty string
+  CHECK(!starts_with("", "abc"));  // empty string
+  CHECK(starts_with("abc", ""));   // empty prefix -> true
+}
+
+TEST_CASE("ends_with char", "[string][ends_with][char]")
+{
+  CHECK(ends_with("abc", 'c'));
+  CHECK(!ends_with("abc", 'b'));
+  CHECK(!ends_with("", 'a'));  // empty string
+}
+
+TEST_CASE("ends_with string", "[string][ends_with][string]")
+{
+  CHECK(ends_with("abc", "c"));
+  CHECK(ends_with("abc", "bc"));
+  CHECK(ends_with("abc", "abc"));
+  CHECK(!ends_with("abc", "abcd"));
+  CHECK(!ends_with("abc", "b"));
+  CHECK(!ends_with("", "a"));    // empty string
+  CHECK(!ends_with("", "abc"));  // empty string
+  CHECK(ends_with("abc", ""));   // empty suffix -> true
+}
+
+TEST_CASE("contains char", "[string][contains][char]")
+{
+  CHECK(contains("abc", 'a'));
+  CHECK(contains("abc", 'b'));
+  CHECK(contains("abc", 'c'));
+  CHECK(!contains("abc", 'x'));
+  CHECK(!contains("", 'a'));  // empty string
+}
+
+TEST_CASE("contains string", "[string][contains][string]")
+{
+  CHECK(contains("abc", "a"));
+  CHECK(contains("abc", "ab"));
+  CHECK(contains("abc", "bc"));
+  CHECK(contains("abc", "abc"));
+  CHECK(!contains("abc", "abcd"));
+  CHECK(!contains("abc", "bca"));
+  CHECK(!contains("", "a"));   // empty string
+  CHECK(contains("", ""));     // empty substring -> true
+  CHECK(contains("abc", ""));  // empty substring -> true
+}
+
+TEST_CASE("unicode / multibyte support", "[string][unicode]")
+{
+  std::string jp = "日本語ABCかな";
+  // starts_with
+  CHECK(starts_with(jp, "日"));
+  CHECK(!starts_with(jp, 'A'));
+  CHECK(starts_with(jp, "日本"));
+  CHECK(!starts_with(jp, "ABC"));
+  // ends_with
+  CHECK(ends_with(jp, "な"));
+  CHECK(!ends_with(jp, 'A'));
+  CHECK(ends_with(jp, "かな"));
+  CHECK(!ends_with(jp, "ABC"));
+  // contains
+  CHECK(contains(jp, "日"));
+  CHECK(contains(jp, 'A'));
+  CHECK(contains(jp, "日本"));
+  CHECK(contains(jp, "ABC"));
+  CHECK(!contains(jp, "XYZ"));
+}
+
+TEST_CASE("single character strings", "[string][edge]")
+{
+  CHECK(starts_with("a", 'a'));
+  CHECK(ends_with("a", 'a'));
+  CHECK(contains("a", 'a'));
+  CHECK(!starts_with("a", 'b'));
+  CHECK(!ends_with("a", 'b'));
+  CHECK(!contains("a", 'b'));
+
+  CHECK(starts_with("a", "a"));
+  CHECK(ends_with("a", "a"));
+  CHECK(contains("a", "a"));
+  CHECK(!starts_with("a", "aa"));
+  CHECK(!ends_with("a", "aa"));
+  CHECK(!contains("a", "aa"));
+}
+
+TEST_CASE("symbols and digits", "[string][symbols]")
+{
+  std::string s = "123!@#abc";
+  CHECK(starts_with(s, '1'));
+  CHECK(!starts_with(s, '!'));
+  CHECK(ends_with(s, 'c'));
+  CHECK(!ends_with(s, '1'));
+  CHECK(contains(s, '!'));
+  CHECK(!contains(s, 'x'));
+  CHECK(contains(s, "123"));
+  CHECK(contains(s, "!@#"));
+  CHECK(!contains(s, "xyz"));
 }
