@@ -287,3 +287,119 @@ TEST_CASE("split - contract tests", "[string][split][contract]")
     CHECK(joined == original);
   }
 }
+
+TEST_CASE("to_lower / to_upper - basic ascii", "[string][case]")
+{
+  SECTION("all upper to lower")
+  {
+    CHECK(stringutils::to_lower("ABC") == "abc");
+  }
+
+  SECTION("all lower to upper")
+  {
+    CHECK(stringutils::to_upper("abc") == "ABC");
+  }
+
+  SECTION("mixed case")
+  {
+    CHECK(stringutils::to_lower("AbC") == "abc");
+    CHECK(stringutils::to_upper("aBc") == "ABC");
+  }
+}
+TEST_CASE("to_lower / to_upper - non alphabet characters preserved", "[string][case]")
+{
+  const std::string input = "1234-_=+!@#";
+
+  CHECK(stringutils::to_lower(input) == input);
+  CHECK(stringutils::to_upper(input) == input);
+}
+TEST_CASE("to_lower / to_upper - idempotent behavior", "[string][case]")
+{
+  const std::string lower = "already lower";
+  const std::string upper = "ALREADY UPPER";
+
+  CHECK(stringutils::to_lower(lower) == lower);
+  CHECK(stringutils::to_upper(upper) == upper);
+}
+TEST_CASE("to_lower / to_upper - mixed content", "[string][case]")
+{
+  CHECK(stringutils::to_lower("UserID_ABC123") == "userid_abc123");
+  CHECK(stringutils::to_upper("UserID_abc123") == "USERID_ABC123");
+}
+TEST_CASE("to_lower / to_upper - non ascii preserved", "[string][case]")
+{
+  const std::string utf8 = "中文ÄÖÜéABC";
+
+  CHECK(stringutils::to_lower(utf8) == "中文ÄÖÜéabc");
+  CHECK(stringutils::to_upper(utf8) == "中文ÄÖÜéABC");
+}
+TEST_CASE("to_lower / to_upper - empty string", "[string][case]")
+{
+  const std::string empty;
+
+  CHECK(stringutils::to_lower(empty).empty());
+  CHECK(stringutils::to_upper(empty).empty());
+  CHECK(stringutils::to_lower("").empty());
+  CHECK(stringutils::to_upper("").empty());
+}
+TEST_CASE("to_lower / to_upper - single character cases", "[string][case]")
+{
+  CHECK(stringutils::to_lower("A") == "a");
+  CHECK(stringutils::to_upper("a") == "A");
+
+  CHECK(stringutils::to_lower("Z") == "z");
+  CHECK(stringutils::to_upper("z") == "Z");
+
+  CHECK(stringutils::to_lower("0") == "0");
+  CHECK(stringutils::to_upper("0") == "0");
+}
+TEST_CASE("to_lower / to_upper - control characters preserved", "[string][case]")
+{
+  std::string input;
+  input.push_back('\n');
+  input.push_back('\t');
+  input.push_back('A');
+
+  CHECK(stringutils::to_lower(input) == std::string("\n\ta"));
+  CHECK(stringutils::to_upper(input) == std::string("\n\tA"));
+}
+TEST_CASE("to_lower / to_upper - length preserved", "[string][case][contract]")
+{
+  const std::string input = "AbC123!@#中文";
+
+  CHECK(stringutils::to_lower(input).size() == input.size());
+  CHECK(stringutils::to_upper(input).size() == input.size());
+}
+TEST_CASE("to_lower / to_upper - japanese only", "[string][case][utf8]")
+{
+  const std::string jp = "日本語かなカナ";
+
+  CHECK(stringutils::to_lower(jp) == jp);
+  CHECK(stringutils::to_upper(jp) == jp);
+  const std::string input = "日本語ABCかなXYZ";
+
+  CHECK(stringutils::to_lower(input) == "日本語abcかなxyz");
+  CHECK(stringutils::to_upper(input) == "日本語ABCかなXYZ");
+}
+TEST_CASE("to_lower / to_upper - japanese mixed with symbols", "[string][case][utf8]")
+{
+  const std::string input = "ユーザーID_ABC123_日本";
+
+  CHECK(stringutils::to_lower(input) == "ユーザーid_abc123_日本");
+  CHECK(stringutils::to_upper(input) == "ユーザーID_ABC123_日本");
+}
+TEST_CASE("to_lower / to_upper - japanese utf8 integrity", "[string][case][utf8][contract]")
+{
+  const std::string input = "日本語テストABC";
+
+  auto lower = stringutils::to_lower(input);
+  auto upper = stringutils::to_upper(input);
+
+  // 长度必须保持一致（UTF-8 字节级安全）
+  CHECK(lower.size() == input.size());
+  CHECK(upper.size() == input.size());
+
+  // 日文子串必须完整保留
+  CHECK(lower.find("日本語テスト") != std::string::npos);
+  CHECK(upper.find("日本語テスト") != std::string::npos);
+}
