@@ -9,6 +9,10 @@ using stringutils::ends_with;
 using stringutils::split;
 using stringutils::starts_with;
 
+using stringutils::trim;
+using stringutils::trim_left;
+using stringutils::trim_right;
+
 TEST_CASE("split - basic single character delimiter", "[string][split]")
 {
   SECTION("normal split")
@@ -517,4 +521,130 @@ TEST_CASE("symbols and digits", "[string][symbols]")
   CHECK(contains(s, "123"));
   CHECK(contains(s, "!@#"));
   CHECK(!contains(s, "xyz"));
+}
+
+TEST_CASE("trim_left - basic ASCII", "[trim_left]")
+{
+  CHECK(trim_left("   hello") == "hello");
+  CHECK(trim_left("\t\tabc") == "abc");
+  CHECK(trim_left("\n\r test") == "test");
+  CHECK(trim_left("no_space") == "no_space");
+  CHECK(trim_left("    ") == "");  // 全是空白
+  CHECK(trim_left("") == "");      // 空字符串
+}
+
+TEST_CASE("trim_right - basic ASCII", "[trim_right]")
+{
+  CHECK(trim_right("hello   ") == "hello");
+  CHECK(trim_right("abc\t\t") == "abc");
+  CHECK(trim_right("test\n\r") == "test");
+  CHECK(trim_right("no_space") == "no_space");
+  CHECK(trim_right("    ") == "");  // 全是空白
+  CHECK(trim_right("") == "");      // 空字符串
+}
+
+TEST_CASE("trim - basic ASCII", "[trim]")
+{
+  CHECK(trim("   hello   ") == "hello");
+  CHECK(trim("\tabc\t") == "abc");
+  CHECK(trim("\n\r test \r\n") == "test");
+  CHECK(trim("no_space") == "no_space");
+  CHECK(trim("    ") == "");  // 全是空白
+  CHECK(trim("") == "");      // 空字符串
+}
+
+TEST_CASE("trim - left only", "[trim][trim_left]")
+{
+  CHECK(trim("   abc") == "abc");
+}
+
+TEST_CASE("trim - right only", "[trim][trim_right]")
+{
+  CHECK(trim("abc   ") == "abc");
+}
+
+TEST_CASE("trim - mixed whitespace", "[trim]")
+{
+  std::string s = " \t\n\r\f\vabc \t\n\r\f\v";
+  CHECK(trim(s) == "abc");
+  CHECK(trim_left(s) == "abc \t\n\r\f\v");
+  CHECK(trim_right(s) == " \t\n\r\f\vabc");
+}
+
+TEST_CASE("trim - unicode / multibyte", "[trim][unicode]")
+{
+  CHECK(trim("  日本語  ") == "日本語");
+  CHECK(trim_left("  日本語") == "日本語");
+  CHECK(trim_right("日本語  ") == "日本語");
+
+  CHECK(trim(" \t\n中文测试\n\t ") == "中文测试");
+}
+
+TEST_CASE("trim - emoji", "[trim][unicode]")
+{
+  CHECK(trim("   😀😃😄   ") == "😀😃😄");
+  CHECK(trim_left("   😀") == "😀");
+  CHECK(trim_right("😄   ") == "😄");
+}
+
+TEST_CASE("trim - empty / single char", "[trim][edge]")
+{
+  CHECK(trim("") == "");
+  CHECK(trim_left("") == "");
+  CHECK(trim_right("") == "");
+
+  CHECK(trim("a") == "a");
+  CHECK(trim_left("a") == "a");
+  CHECK(trim_right("a") == "a");
+
+  CHECK(trim(" ") == "");
+  CHECK(trim_left(" ") == "");
+  CHECK(trim_right(" ") == "");
+}
+
+TEST_CASE("trim - string with only whitespace", "[trim][edge]")
+{
+  CHECK(trim(" \t\n\r\v\f") == "");
+  CHECK(trim_left(" \t\n\r\v\f") == "");
+  CHECK(trim_right(" \t\n\r\v\f") == "");
+}
+TEST_CASE("trim - no whitespace", "[trim][edge]")
+{
+  CHECK(trim("abc") == "abc");
+  CHECK(trim_left("abc") == "abc");
+  CHECK(trim_right("abc") == "abc");
+}
+TEST_CASE("trim - whitespace in middle preserved", "[trim][edge]")
+{
+  CHECK(trim("  a b c  ") == "a b c");
+  CHECK(trim_left("  a b c") == "a b c");
+  CHECK(trim_right("a b c  ") == "a b c");
+}
+TEST_CASE("trim - length preservation", "[trim][contract]")
+{
+  std::string s = "   test string   ";
+  size_t original_length = s.size();
+
+  std::string trimmed = trim(s);
+  CHECK(trimmed.size() <= original_length);
+
+  std::string left_trimmed = trim_left(s);
+  CHECK(left_trimmed.size() <= original_length);
+
+  std::string right_trimmed = trim_right(s);
+  CHECK(right_trimmed.size() <= original_length);
+}
+TEST_CASE("trim - unicode length preservation", "[trim][unicode][contract]")
+{
+  std::string s = "   日本語テスト中文哈哈哈   ";
+  size_t original_length = s.size();
+
+  std::string trimmed = trim(s);
+  CHECK(trimmed.size() <= original_length);
+
+  std::string left_trimmed = trim_left(s);
+  CHECK(left_trimmed.size() <= original_length);
+
+  std::string right_trimmed = trim_right(s);
+  CHECK(right_trimmed.size() <= original_length);
 }
