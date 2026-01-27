@@ -4,6 +4,7 @@
 /**
  * @file time.h
  * @brief 时间相关工具函数（格式化时间字符串 / 时间戳）
+ * 注: DateTime相关功能推荐使用date库: https://github.com/HowardHinnant/date
  *
  * 提供：
  *  - 获取当前时间字符串
