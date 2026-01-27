@@ -1,4 +1,10 @@
+#include <array>
 #include <catch2/catch.hpp>
+#include <deque>
+#include <forward_list>
+#include <list>
+#include <queue>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -9,6 +15,7 @@ using stringutils::ends_with;
 using stringutils::split;
 using stringutils::starts_with;
 
+using stringutils::join;
 using stringutils::trim;
 using stringutils::trim_left;
 using stringutils::trim_right;
@@ -648,3 +655,216 @@ TEST_CASE("trim - unicode length preservation", "[trim][unicode][contract]")
   std::string right_trimmed = trim_right(s);
   CHECK(right_trimmed.size() <= original_length);
 }
+
+TEST_CASE("join - vector<int>", "[join]")
+{
+  std::vector<int> v{1, 2, 3};
+  REQUIRE(join(v, ",") == "1,2,3");
+  REQUIRE(join(v, ';') == "1;2;3");
+
+  std::vector<int> empty;
+  REQUIRE(join(empty, ",") == "");
+
+  std::vector<int> single{42};
+  REQUIRE(join(single, ",") == "42");
+}
+
+TEST_CASE("join - list<int>", "[join]")
+{
+  std::list<int> l{4, 5, 6};
+  REQUIRE(join(l, "-") == "4-5-6");
+
+  std::list<int> empty;
+  REQUIRE(join(empty, "-") == "");
+
+  std::list<int> single{7};
+  REQUIRE(join(single, "-") == "7");
+}
+
+TEST_CASE("join - deque<double>", "[join]")
+{
+  std::deque<double> d{1.1, 2.2, 3.3};
+  REQUIRE(join(d, ", ") == "1.1, 2.2, 3.3");
+
+  std::deque<double> single{9.9};
+  REQUIRE(join(single, ", ") == "9.9");
+
+  std::deque<double> empty;
+  REQUIRE(join(empty, ", ") == "");
+}
+
+TEST_CASE("join - forward_list<char>", "[join]")
+{
+  std::forward_list<char> fl{'a', 'b', 'c'};
+  REQUIRE(join(fl, "") == "abc");
+  REQUIRE(join(fl, "-") == "a-b-c");
+
+  std::forward_list<char> single{'z'};
+  REQUIRE(join(single, "-") == "z");
+
+  std::forward_list<char> empty;
+  REQUIRE(join(empty, "-") == "");
+}
+
+TEST_CASE("join - array<std::string, 3>", "[join]")
+{
+  std::array<std::string, 3> arr{{"one", "two", "three"}};
+  REQUIRE(join(arr, ", ") == "one, two, three");
+}
+
+TEST_CASE("join - set<int>", "[join]")
+{
+  std::set<int> s{3, 1, 2};
+  REQUIRE(join(s, "-") == "1-2-3");  // set 自动排序
+
+  std::set<int> single{7};
+  REQUIRE(join(single, "-") == "7");
+
+  std::set<int> empty;
+  REQUIRE(join(empty, "-") == "");
+}
+
+TEST_CASE("join - unicode strings", "[join][unicode]")
+{
+  std::vector<std::string> v{"日本語", "テスト", "中文"};
+  REQUIRE(join(v, " ") == "日本語 テスト 中文");
+}
+
+TEST_CASE("join - char vs string separator", "[join]")
+{
+  std::vector<int> v{10, 20, 30};
+  REQUIRE(join(v, ',') == join(v, std::string(",")));
+  REQUIRE(join(v, ';') == join(v, std::string(";")));
+}
+
+TEST_CASE("join - basic vector<int>", "[join]")
+{
+  std::vector<int> v{1, 2, 3};
+  SECTION("string separator")
+  {
+    std::string result = join(v, ",");
+    REQUIRE(result == "1,2,3");
+  }
+  SECTION("char separator")
+  {
+    std::string result = join(v, ';');
+    REQUIRE(result == "1;2;3");
+  }
+}
+
+TEST_CASE("join - single element container", "[join]")
+{
+  std::vector<std::string> v{"hello"};
+  REQUIRE(join(v, ",") == "hello");
+  REQUIRE(join(v, ';') == "hello");
+}
+
+TEST_CASE("join - empty container", "[join]")
+{
+  std::vector<int> empty;
+  REQUIRE(join(empty, ",") == "");
+  REQUIRE(join(empty, ';') == "");
+}
+
+TEST_CASE("join - list<string>", "[join]")
+{
+  std::list<std::string> l{"apple", "banana", "cherry"};
+  std::string result = join(l, " | ");
+  REQUIRE(result == "apple | banana | cherry");
+}
+
+TEST_CASE("join - set<double>", "[join]")
+{
+  std::set<double> s{3.14, 2.71, 1.41};  // set 自动排序
+  std::string result = join(s, "-");
+  REQUIRE(result == "1.41-2.71-3.14");
+}
+
+TEST_CASE("join - deque<char>", "[join]")
+{
+  std::deque<char> d{'a', 'b', 'c'};
+  REQUIRE(join(d, "") == "abc");  // 空分隔符
+  REQUIRE(join(d, "-") == "a-b-c");
+}
+
+TEST_CASE("join - mixed types", "[join]")
+{
+  std::vector<double> v{1.1, 2.2, 3.3};
+  std::string result = join(v, ", ");
+  REQUIRE(result == "1.1, 2.2, 3.3");
+}
+
+TEST_CASE("join - unicode strings2", "[join][unicode]")
+{
+  std::vector<std::string> v{"日本語", "テスト", "中文"};
+  std::string result = join(v, " ");
+  REQUIRE(result == "日本語 テスト 中文");
+}
+
+TEST_CASE("join - char separator vs string separator", "[join]")
+{
+  std::vector<int> v{10, 20, 30};
+  REQUIRE(join(v, ',') == join(v, std::string(",")));
+  REQUIRE(join(v, ';') == join(v, std::string(";")));
+}
+
+TEST_CASE("join - std::queue<int> via conversion", "[join][queue]")
+{
+  std::queue<int> q;
+  q.push(10);
+  q.push(20);
+  q.push(30);
+
+  // 转成 vector 进行 join
+  std::vector<int> v;
+  while (!q.empty())
+  {
+    v.push_back(q.front());
+    q.pop();
+  }
+
+  std::string result = join(v, ",");
+  REQUIRE(result == "10,20,30");
+}
+
+TEST_CASE("join - std::priority_queue<int> via conversion", "[join][priority_queue]")
+{
+  std::priority_queue<int> pq;
+  pq.push(50);
+  pq.push(10);
+  pq.push(30);
+
+  // priority_queue 是大顶堆，pop 顺序是从大到小
+  std::vector<int> v;
+  while (!pq.empty())
+  {
+    v.push_back(pq.top());
+    pq.pop();
+  }
+
+  std::string result = join(v, "-");
+  REQUIRE(result == "50-30-10");
+}
+
+TEST_CASE("join - std::queue<std::string> via conversion", "[join][queue][string]")
+{
+  std::queue<std::string> q;
+  q.emplace("apple");
+  q.emplace("banana");
+  q.emplace("cherry");
+
+  std::vector<std::string> v;
+  while (!q.empty())
+  {
+    v.push_back(q.front());
+    q.pop();
+  }
+
+  std::string result = join(v, " | ");
+  REQUIRE(result == "apple | banana | cherry");
+}
+
+// TEST_CASE("join - std::map should fail", "[join][map][compile_error]") {
+//     std::map<int, std::string> m{{1, "a"}, {2, "b"}};
+//     join(m, ","); // static_assert triggers: Map types are not supported
+// }
