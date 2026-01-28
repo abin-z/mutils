@@ -12,7 +12,7 @@ C++常用的工具类集合, 目前已包含一下工具类:
 
 - C++11版本的 `make_unique` 工具实现
 
-- 时间相关函数: 时间戳/时间字符串
+- 时间相关函数: 时间戳/时间字符串(时间处理推荐[date](https://github.com/HowardHinnant/date)库)
 
 - string_utils: string相关的工具函数
 
