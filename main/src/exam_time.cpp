@@ -4,7 +4,7 @@
 
 int main()
 {
-  // 5. 时间戳
+  // 时间戳
   fmt::print("timestamp (sec):    {}\n", timeutils::current_timestamp_sec());
 
   fmt::print("timestamp (millis): {}\n", timeutils::current_timestamp_millis());
